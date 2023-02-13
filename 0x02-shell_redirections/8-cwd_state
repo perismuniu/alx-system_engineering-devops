@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Best School" > "\*\\'"Best School"\'\\*$\?\*\*\*\*\*:)"
+echo "ls -la" >> ls_cwd_content
