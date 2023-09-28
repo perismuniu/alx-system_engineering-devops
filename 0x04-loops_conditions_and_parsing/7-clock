@@ -10,6 +10,7 @@ minute=1
 while [ $hour -le 12 ]
   echo "Hour: $hour"
 do
+  # Loop displaying minutes from 1 to 59
   while [ $minute -le 59 ]
   do
     echo $minute
