@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# This script displays numbers from 1 to 100
+
+for count in $(seq 1 100)
+do
+	if ((count % 3 == 0 && count % 5 == 0))
+	then
+		echo "FizzBuzz"
+	elif ((count % 3 == 0))
+	then
+		echo "Fizz"
+	elif ((count % 5 == 0))
+	then
+		echo "Buzz"
+	else
+		echo "$count"
+	fi
+done
