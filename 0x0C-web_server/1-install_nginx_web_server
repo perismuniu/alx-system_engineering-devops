@@ -3,10 +3,11 @@
 
 # Update the package list and install Nginx
 sudo apt-get -y update
-sudo apt-get install nginx -y
+sudo apt-get -y install nginx
 
-# Create a simple HTML file with the specified text
-echo "Hello World!" > /var/www/html/index.html
+#Create a simple HTML file with the specified text
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
 
 #Restart Nginx
 sudo service nginx start
