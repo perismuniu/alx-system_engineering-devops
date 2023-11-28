@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#Script that configures your Nginx server 
+#so that /redirect_me is redirecting to another page.
+
+# Script that installs Nginx server and redirects /redirect_me
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+#Create a simple HTML file with the specified text
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
+#301 redirection
+string_for_replacement="server_name _;\n\tlocation \/redirect_me {\n\t\trewrite ^\/redirect_me https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4 permanent;\n\t}"
+
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+#Restart Nginx
+sudo service nginx start
