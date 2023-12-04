@@ -1,39 +1,28 @@
 #!/usr/bin/env bash
-# Script Name: 0-custom_http_response_header
-# Description: Configure Nginx with a custom HTTP response header
+# Customizing a 404-error_page
 
+# Updating Packages before performing installations
 sudo apt-get update
-sudo apt-get -y install nginx
+sudo apt-get install -y nginx
 
-# configure firewell to allow request through port 80
-sudo ufw allow 'Nginx HTTP'
+# Creating an index.html page
+echo "Hello World!" | sudo tee /var/www/html/index.html
 
-sudo mkdir -p /var/www/html
+# Performing a "moved permanently redirection" (301)
+new_string="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/perismuniu permanent;"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-# change permissions to allow us to easily create files in this directory
-sudo chmod -R 755 /var/www
+# Creating a 404 Custom error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+new_string="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
 
-# create the index page
-echo 'Hello World!' |sudo tee /var/www/html/index.html
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
 
-# create a webpage for 404
-echo "Ceci n'est pas une page" |sudo tee /var/www/html/custom_404.html
+# Creating an HTTP response header
+sudo sed -i "/server_name _/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
 
-SERVER=$(hostname)
+# Testing configurations for syntax errors
+sudo nginx -t
 
-SERVER_CONFIG=\
-"server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location / {
-		add_header X-Served-By '$SERVER';
-                try_files \$uri \$uri/ =404;
-        }
-}"
-
-bash -c "echo -e '$SERVER_CONFIG' > /etc/nginx/sites-enabled/default"
-
-sudo /etc/init.d/nginx restart
+# Restart nginx after implementing changes
+sudo service nginx restart
