@@ -7,7 +7,7 @@ sudo apt-get update
 sudo apt-get install haproxy -y
 
 # Configure HAProxy
-sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOT
+sudo tee /etc/haproxy/haproxy.cfg <<EOT
 global
     daemon
     maxconn 256
