@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 # Shows information about subdomains.
 
-domain_information() {
+function audit_subdomain {
     local domain="$1"
     local subdomain="$2"
-    local line
-    line=$(dig "$subdomain"."$domain" | awk '/ANSWER SECTION:/ {getline; print; getline; print}')
-    echo "$subdomain $line" | awk '{printf "The subdomain %s is a %s record and points to %s\n", $1, $2, $3}'
+
+    if [ -z "$subdomain" ]; then
+	   subdomains=("www" "lb-01" "web-01" "web-02")
+    else
+	    subdomains=("$subdomain")
+    fi
+
+    for sub in "${subdomains[@]}"; do
+	    record_type=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ {getline; print $4 }')
+	    destination=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ {getline; print $5 }')
+	    echo "The subdomain $sub is a $record_type record and points to $destination"
+    done
 }
 
-if [ "$#" -eq 1 ]; then
-    domain_information "$1" "www"
-    domain_information "$1" "lb-01"
-    domain_information "$1" "web-01"
-    domain_information "$1" "web-02"
-elif [ "$#" -eq 2 ]; then
-    domain_information "$1" "$2"
-fi
+audit_subdomain "$1" "$2"
