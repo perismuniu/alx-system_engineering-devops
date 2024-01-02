@@ -3,8 +3,8 @@
 Script to gather data from an API for a given employee ID and export to CSV.
 """
 
-import requests
 import csv
+import requests
 from sys import argv
 
 
