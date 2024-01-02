@@ -1,50 +1,39 @@
 #!/usr/bin/python3
 """
-Script to gather data from an API for a given employee ID and export to CSV.
+A Script that, uses a REST API, for a given employee ID, returns
+information about his/her TODO list progress
+exporting data in the CSV format.
 """
 
 import csv
+import json
 import requests
 from sys import argv
 
 
-def export_to_csv(employee_id, user_data, todo_data):
-    """
-    Export data to CSV file.
-    """
-    filename = "{}.csv".format(employee_id)
-
-    with open(filename, mode='w', newline='') as csvfile:
-        fieldnames = ['"USER_ID"', '"USERNAME"',
-                      '"TASK_COMPLETED_STATUS"', '"TASK_TITLE"']
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
-
-        writer.writerow(fieldnames)
-        for task in todo_data:
-            writer.writerow([
-                employee_id,
-                user_data.get('name'),
-                str(task.get('completed')),
-                task.get('title')
-                ])
-
-
 if __name__ == "__main__":
-    if len(argv) != 2 or not argv[1].isdigit():
-        print("Usage: {} <employee_id>".format(argv[0]))
-    else:
-        employee_id = argv[1]
-        base_url = "https://jsonplaceholder.typicode.com"
 
-        # Fetch user information
-        user_response = requests.get("{}/users/{}"
-                                     .format(base_url, employee_id))
-        user_data = user_response.json()
+    sessionReq = requests.Session()
 
-        # Fetch TODO list for the user
-        todo_response = requests.get("{}/todos?userId={}"
-                                     .format(base_url, employee_id))
-        todo_data = todo_response.json()
+    idEmp = argv[1]
+    idURL = 'https://jsonplaceholder.typicode.com/users/{}/todos'.format(idEmp)
+    nameURL = 'https://jsonplaceholder.typicode.com/users/{}'.format(idEmp)
 
-        # Export to CSV
-        export_to_csv(employee_id, user_data, todo_data)
+    employee = sessionReq.get(idURL)
+    employeeName = sessionReq.get(nameURL)
+
+    json_req = employee.json()
+    usr = employeeName.json()['username']
+
+    totalTasks = 0
+
+    for done_tasks in json_req:
+        if done_tasks['completed']:
+            totalTasks += 1
+
+    fileCSV = idEmp + '.csv'
+
+    with open(fileCSV, "w", newline='') as csvfile:
+        write = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
+        for i in json_req:
+            write.writerow([idEmp, usr, i.get('completed'), i.get('title')])
