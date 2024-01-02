@@ -15,18 +15,18 @@ def export_to_csv(employee_id, user_data, todo_data):
     filename = "{}.csv".format(employee_id)
 
     with open(filename, mode='w', newline='') as csvfile:
-        fieldnames = ['USER_ID', 'USERNAME',
-                      'TASK_COMPLETED_STATUS', 'TASK_TITLE']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        fieldnames = ['"USER_ID"', '"USERNAME"',
+                      '"TASK_COMPLETED_STATUS"', '"TASK_TITLE"']
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
 
-        writer.writeheader()
+        writer.writerow(fieldnames)
         for task in todo_data:
-            writer.writerow({
-                'USER_ID': employee_id,
-                'USERNAME': user_data.get('name'),
-                'TASK_COMPLETED_STATUS': str(task.get('completed')),
-                'TASK_TITLE': task.get('title')
-            })
+            writer.writerow([
+                employee_id,
+                user_data.get('name'),
+                str(task.get('completed')),
+                task.get('title')
+                ])
 
 
 if __name__ == "__main__":
